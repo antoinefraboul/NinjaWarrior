@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 public class CubeMap2 : MonoBehaviour
 {
+    public Camera m_cam;
+    public NavMeshAgent m_agent;
     public NavMeshSurface m_surfaces;
     public GameObject m_shape;
     public GameObject[,] m_list;
@@ -13,7 +15,7 @@ public class CubeMap2 : MonoBehaviour
     public List<Material> m_color;
     public float m_gape = 2;
     List<GameObject> m_path;
-
+    int m_current_step=0;
 
     void Start()
     {
@@ -59,16 +61,47 @@ public class CubeMap2 : MonoBehaviour
         m_surfaces.BuildNavMesh();
         m_path = new List<GameObject>();
         makePath(m_path);
-
-     
-      
-        
+        for (int x = 0; x < m_path.Count; x++)
+            Debug.Log(x + ": " + m_path[x].GetComponent<Renderer>().material.name);
     }
 
  
     void Update()
     {
-        
+        NavMeshHit target;
+        for(int i = 0; i < m_steps; i++)
+        {
+            for(int j = 0; j < m_color.Count; j++)
+            {
+                if (!m_agent.Raycast(m_list[i, j].transform.position, out target))
+                {
+                    if(m_current_step < m_steps)
+                    {
+                        if (m_list[i, j].Equals(m_path[m_current_step]))
+                        {
+                            Debug.Log("reach " + m_current_step);//reach the plateform
+                            m_current_step++;
+                            if (m_current_step == m_steps) Debug.Log("end");
+
+                        }
+                        else
+                        {
+                            if (!checkPlateform(m_path, m_list[i, j]))
+                            {
+                                m_list[i, j].SetActive(false);
+                                Debug.Log("fail"); //fail
+                            }
+                        }
+                    }
+
+                    //disable behind
+                    if (i > 0)
+                    {
+                        for (int x = 0; x < m_color.Count; x++) m_list[i - 1, x].SetActive(false);
+                    }
+                }
+            }
+        }
     }
 
     void Shuffle(List<Material> list)
@@ -82,6 +115,20 @@ public class CubeMap2 : MonoBehaviour
         }
     }
 
+
+    void updatePlateforme()
+    {
+       
+    }
+
+    bool checkPlateform(List<GameObject> list,GameObject o)
+    {
+        foreach(GameObject temp in list)
+        {
+            if (o.Equals(temp)) return true;
+        }
+        return false;
+    }
     void makePath(List<GameObject> path)
     {
         var index = Random.Range(0, m_color.Count);
@@ -94,14 +141,15 @@ public class CubeMap2 : MonoBehaviour
             //side
            var side = Random.Range(0, 100);
 
-           if (side < 20)
+            if (side < 20)
             {
+                next_index = index;
                 //bounds
-                if (index > 0 && index < m_color.Count-1)
+                if (index > 0 && index < m_color.Count - 1)
                 {
                     index += side < 10 ? 1 : -1;
                 }
-                else if (index + 1 < m_color.Count-1)
+                else if (index + 1 < m_color.Count - 1)
                 {
                     index += 1;
                 }
@@ -110,7 +158,14 @@ public class CubeMap2 : MonoBehaviour
                     index -= 1;
                 }
                 i--;
-                path.Add(m_list[i, index]);
+                if (!checkPlateform(m_path, m_list[i, index])) //if plateform is already in the path ignore
+                {
+                    path.Add(m_list[i, index]);
+                }
+                else
+                {
+                    index = next_index;
+                }
             }
             else
             {
@@ -126,11 +181,6 @@ public class CubeMap2 : MonoBehaviour
                     i--;
                 }
             }
-
-
         }
-
-        for(int x=0;x<path.Count;x++)
-            Debug.Log(x+": "+path[x].GetComponent<Renderer>().material.name);
     }
 }

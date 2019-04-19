@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 500506871}
   - component: {fileID: 500506872}
   m_Layer: 0
-  m_Name: Map2
+  m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -255,6 +255,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acdff681c6901af47b52dd88a485f812, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_cam: {fileID: 906444439}
+  m_agent: {fileID: 1112826214}
   m_surfaces: {fileID: 1007932016}
   m_shape: {fileID: 1248334953}
   m_steps: 5
