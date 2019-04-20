@@ -32,12 +32,12 @@ public class Cube : MonoBehaviour
             new Vector3 (0, 0, 1),
         };
         /*
-
         for (int i = 0; i < m_vertices.Length; i++)
         {
             m_vertices[i].Scale(size);
             m_vertices[i] += offset;
-        }*/
+        }
+        */
 
         m_triangles = new int[]
         {
