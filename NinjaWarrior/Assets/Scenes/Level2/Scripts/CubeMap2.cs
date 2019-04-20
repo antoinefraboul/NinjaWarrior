@@ -15,8 +15,10 @@ public class CubeMap2 : MonoBehaviour
     public List<Material> m_color;
     public float m_gape = 2;
     List<GameObject> m_path;
-    int m_current_step=0;
+    int m_current_path=0;
 
+
+    //TODO  : move cam with arrow or set focus on character
     void Start()
     {
         m_list = new GameObject[m_steps, m_color.Count];
@@ -75,32 +77,42 @@ public class CubeMap2 : MonoBehaviour
             {
                 if (!m_agent.Raycast(m_list[i, j].transform.position, out target))
                 {
-                    if(m_current_step < m_steps)
+                    if(m_current_path < m_path.Count)
                     {
-                        if (m_list[i, j].Equals(m_path[m_current_step]))
-                        {
-                            Debug.Log("reach " + m_current_step);//reach the plateform
-                            m_current_step++;
-                            if (m_current_step == m_steps) Debug.Log("end");
-
+                        if (m_list[i, j].Equals(m_path[m_current_path]))
+                        {  
+                            m_current_path++;
+                            Debug.Log("reach " + (m_current_path - 1));
+                            if (m_current_path == m_path.Count) GameEnded(true); //stop
                         }
-                        else
-                        {
-                            if (!checkPlateform(m_path, m_list[i, j]))
-                            {
-                                m_list[i, j].SetActive(false);
-                                Debug.Log("fail"); //fail
-                            }
+                        else if(m_current_path>0 && !m_list[i, j].Equals(m_path[m_current_path-1])){
+                            m_list[i, j].SetActive(false);
+                            GameEnded(false);
                         }
                     }
 
                     //disable behind
-                    if (i > 0)
+                    if (i > 0 && m_current_path < m_path.Count)
                     {
                         for (int x = 0; x < m_color.Count; x++) m_list[i - 1, x].SetActive(false);
                     }
                 }
             }
+        }
+    }
+
+    void GameEnded(bool state)
+    {
+        m_current_path = int.MaxValue; //to stop the update()
+        if (state)
+        {
+            showPath();
+            Debug.Log("win");//win
+        }
+        else
+        {
+            showPath();
+            Debug.Log("lose");//lose
         }
     }
 
@@ -116,9 +128,12 @@ public class CubeMap2 : MonoBehaviour
     }
 
 
-    void updatePlateforme()
+    void showPath()
     {
-       
+        foreach(GameObject  temp in m_list)
+        {
+            temp.SetActive(checkPlateform(m_path, temp));
+        }
     }
 
     bool checkPlateform(List<GameObject> list,GameObject o)
@@ -140,14 +155,14 @@ public class CubeMap2 : MonoBehaviour
 
             //side
            var side = Random.Range(0, 100);
-
-            if (side < 20)
+            var rate = 20;
+            if (side < rate)
             {
                 next_index = index;
                 //bounds
                 if (index > 0 && index < m_color.Count - 1)
                 {
-                    index += side < 10 ? 1 : -1;
+                    index += side < rate/2 ? 1 : -1;
                 }
                 else if (index + 1 < m_color.Count - 1)
                 {
