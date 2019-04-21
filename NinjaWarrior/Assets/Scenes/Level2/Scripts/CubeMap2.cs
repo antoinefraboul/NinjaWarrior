@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using UnityEngine.SceneManagement;
 
 public class CubeMap2 : MonoBehaviour
 {
@@ -14,6 +14,7 @@ public class CubeMap2 : MonoBehaviour
     public int m_steps = 5;
     public List<Material> m_color;
     public float m_gape = 2;
+    [Range(0.0f, 100.0f)]  public float m_rate_side = 20;
     List<GameObject> m_path;
     int m_current_path=0;
 
@@ -63,6 +64,7 @@ public class CubeMap2 : MonoBehaviour
         m_surfaces.BuildNavMesh();
         m_path = new List<GameObject>();
         makePath(m_path);
+
         for (int x = 0; x < m_path.Count; x++)
             Debug.Log(x + ": " + m_path[x].GetComponent<Renderer>().material.name);
     }
@@ -71,48 +73,40 @@ public class CubeMap2 : MonoBehaviour
     void Update()
     {
         NavMeshHit target;
-        for(int i = 0; i < m_steps; i++)
+        foreach (GameObject o in m_list)
         {
-            for(int j = 0; j < m_color.Count; j++)
+            if (m_current_path < m_path.Count && !m_agent.Raycast(o.transform.position, out target))
             {
-                if (!m_agent.Raycast(m_list[i, j].transform.position, out target))
+                //On a cube of the map
+                if (m_path.Contains(o))
                 {
-                    if(m_current_path < m_path.Count)
+                    //Cube is part of the path
+                    if (o.Equals(m_path[m_current_path]))
                     {
-                        if (m_list[i, j].Equals(m_path[m_current_path]))
-                        {  
-                            m_current_path++;
-                            Debug.Log("reach " + (m_current_path - 1));
-                            if (m_current_path == m_path.Count) GameEnded(true); //stop
-                        }
-                        else if(m_current_path>0 && !m_list[i, j].Equals(m_path[m_current_path-1])){
-                            m_list[i, j].SetActive(false);
-                            GameEnded(false);
+                        //Cube it the next cube to reach
+                        Debug.Log("reach: " + o.GetComponent<Renderer>().material);
+                        m_current_path++;
+                        if (m_current_path == m_path.Count)
+                        {
+                            Debug.Log("win");
+                            showPath();
                         }
                     }
-
-                    //disable behind
-                    if (i > 0 && m_current_path < m_path.Count)
+                    else if(m_current_path>0 && !o.Equals(m_path[m_current_path-1]))
                     {
-                        for (int x = 0; x < m_color.Count; x++) m_list[i - 1, x].SetActive(false);
+                        //not the next plateform reach
+                        o.SetActive(false); 
+                        Debug.Log("lose");
+                        showPath();
                     }
                 }
+                else
+                {
+                    o.SetActive(false);
+                    Debug.Log("lose2");
+                    showPath();
+                }             
             }
-        }
-    }
-
-    void GameEnded(bool state)
-    {
-        m_current_path = int.MaxValue; //to stop the update()
-        if (state)
-        {
-            showPath();
-            Debug.Log("win");//win
-        }
-        else
-        {
-            showPath();
-            Debug.Log("lose");//lose
         }
     }
 
@@ -132,18 +126,10 @@ public class CubeMap2 : MonoBehaviour
     {
         foreach(GameObject  temp in m_list)
         {
-            temp.SetActive(checkPlateform(m_path, temp));
+            temp.SetActive(m_path.Contains(temp));
         }
     }
 
-    bool checkPlateform(List<GameObject> list,GameObject o)
-    {
-        foreach(GameObject temp in list)
-        {
-            if (o.Equals(temp)) return true;
-        }
-        return false;
-    }
     void makePath(List<GameObject> path)
     {
         var index = Random.Range(0, m_color.Count);
@@ -154,15 +140,14 @@ public class CubeMap2 : MonoBehaviour
             var next_index=Random.Range(0, m_color.Count);
 
             //side
-           var side = Random.Range(0, 100);
-            var rate = 20;
-            if (side < rate)
+            float side = Random.Range(0.0f, 100.0f);
+            if (side < m_rate_side)
             {
                 next_index = index;
                 //bounds
                 if (index > 0 && index < m_color.Count - 1)
                 {
-                    index += side < rate/2 ? 1 : -1;
+                    index += side < m_rate_side / 2 ? 1 : -1;
                 }
                 else if (index + 1 < m_color.Count - 1)
                 {
@@ -173,7 +158,7 @@ public class CubeMap2 : MonoBehaviour
                     index -= 1;
                 }
                 i--;
-                if (!checkPlateform(m_path, m_list[i, index])) //if plateform is already in the path ignore
+                if (!m_path.Contains(m_list[i,index]))//if plateform is already in the path ignore
                 {
                     path.Add(m_list[i, index]);
                 }
@@ -189,7 +174,6 @@ public class CubeMap2 : MonoBehaviour
                 {
                     index = next_index;
                     path.Add(m_list[i, index]);
-                    // Debug.Log(index + " " + m_list[i, index].GetComponent<Renderer>().material.name);
                 }
                 else
                 {
