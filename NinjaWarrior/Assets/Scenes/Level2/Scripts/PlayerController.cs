@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (FindObjectOfType<GameManager>().isPlaying())
+        if (GameManager.m_gameIsPlaying)
         {
             if (Input.GetMouseButtonDown(0))
             {

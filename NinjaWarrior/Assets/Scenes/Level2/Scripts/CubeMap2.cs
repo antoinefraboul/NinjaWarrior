@@ -77,15 +77,17 @@ public class CubeMap2 : MonoBehaviour
  
     void Update()
     {
-        //cam
-        if (Input.GetMouseButton(1))
+        if (GameManager.m_gameIsPlaying)
         {
-            m_cam.transform.position -= m_cam.transform.right * Input.GetAxis("Mouse X");
-            m_cam.transform.position -= m_cam.transform.up * Input.GetAxis("Mouse Y");
-        }
+            //UI
+            m_UI.SetActive(true);
+            //cam
+            if (Input.GetMouseButton(1))
+            {
+                m_cam.transform.position -= m_cam.transform.right * Input.GetAxis("Mouse X");
+                m_cam.transform.position -= m_cam.transform.up * Input.GetAxis("Mouse Y");
+            }
 
-        if (FindObjectOfType<GameManager>().isPlaying())
-        {
             NavMeshHit target;
             foreach (GameObject o in m_list)
             {
@@ -107,7 +109,7 @@ public class CubeMap2 : MonoBehaviour
                             {
                                 Debug.Log("win");
                                 showPath();
-                                FindObjectOfType<GameManager>().Playing(false);
+                                GameManager.m_gameIsPlaying = false;
                             }
                         }
                         else if (m_next > 0 && !o.Equals(m_path[m_next - 1]))
@@ -116,7 +118,7 @@ public class CubeMap2 : MonoBehaviour
                             o.SetActive(false);
                             Debug.Log("lose");
                             showPath();
-                            FindObjectOfType<GameManager>().Playing(false);
+                            GameManager.m_gameIsPlaying = false;
                         }
                     }
                     else
@@ -124,10 +126,14 @@ public class CubeMap2 : MonoBehaviour
                         o.SetActive(false);
                         Debug.Log("lose2");
                         showPath();
-                        FindObjectOfType<GameManager>().Playing(false);
+                        GameManager.m_gameIsPlaying = false;
                     }
                 }
             }
+        }
+        else
+        {
+            m_UI.SetActive(false);
         }
     }
 
