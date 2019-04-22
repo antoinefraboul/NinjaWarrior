@@ -18,26 +18,34 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (FindObjectOfType<GameManager>().isPlaying())
         {
-            Ray ray = m_cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit target;
-
-            if(Physics.Raycast(ray,out target))
+            if (Input.GetMouseButtonDown(0))
             {
-                //Move agent to target
-                m_agent.SetDestination(target.point);
+                Ray ray = m_cam.ScreenPointToRay(Input.mousePosition);
+                RaycastHit target;
+
+                if (Physics.Raycast(ray, out target))
+                {
+                    //Move agent to target
+                    m_agent.SetDestination(target.point);
+                }
             }
-        }
 
-        if (m_agent.remainingDistance > m_agent.stoppingDistance)
-        {
-            m_character.Move(m_agent.desiredVelocity, false, false);
+            if (m_agent.remainingDistance > m_agent.stoppingDistance)
+            {
+                m_character.Move(m_agent.desiredVelocity, false, false);
 
+            }
+            else
+            {
+                m_character.Move(Vector3.zero, false, false);
+            }
         }
         else
         {
-            m_character.Move(Vector3.zero,false,false);
+            //stop character
+            m_character.Move(Vector3.zero, false, false);
         }
     }
 }

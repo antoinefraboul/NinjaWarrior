@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class CubeMap2 : MonoBehaviour
 {
@@ -14,9 +16,12 @@ public class CubeMap2 : MonoBehaviour
     public int m_steps = 5;
     public List<Material> m_color;
     public float m_gape = 2;
+    public GameObject m_UI;
+    public List<GameObject> m_color_icons;
+    public TextMeshProUGUI m_steps_text;
     [Range(0.0f, 100.0f)]  public float m_rate_side = 20;
     List<GameObject> m_path;
-    int m_current_path=0;
+    int m_next=0;
 
 
     //TODO  : move cam with arrow or set focus on character
@@ -64,7 +69,7 @@ public class CubeMap2 : MonoBehaviour
         m_surfaces.BuildNavMesh();
         m_path = new List<GameObject>();
         makePath(m_path);
-
+        updateColorIcons();
         for (int x = 0; x < m_path.Count; x++)
             Debug.Log(x + ": " + m_path[x].GetComponent<Renderer>().material.name);
     }
@@ -72,42 +77,115 @@ public class CubeMap2 : MonoBehaviour
  
     void Update()
     {
-        NavMeshHit target;
-        foreach (GameObject o in m_list)
+        //cam
+        if (Input.GetMouseButton(1))
         {
-            if (m_current_path < m_path.Count && !m_agent.Raycast(o.transform.position, out target))
+            m_cam.transform.position -= m_cam.transform.right * Input.GetAxis("Mouse X");
+            m_cam.transform.position -= m_cam.transform.up * Input.GetAxis("Mouse Y");
+        }
+
+        if (FindObjectOfType<GameManager>().isPlaying())
+        {
+            NavMeshHit target;
+            foreach (GameObject o in m_list)
             {
-                //On a cube of the map
-                if (m_path.Contains(o))
+                if (m_next < m_path.Count && !m_agent.Raycast(o.transform.position, out target))
                 {
-                    //Cube is part of the path
-                    if (o.Equals(m_path[m_current_path]))
+                    //On a cube of the map
+                    if (m_path.Contains(o))
                     {
-                        //Cube it the next cube to reach
-                        Debug.Log("reach: " + o.GetComponent<Renderer>().material);
-                        m_current_path++;
-                        if (m_current_path == m_path.Count)
+                        //Cube is part of the path
+                        if (o.Equals(m_path[m_next]))
                         {
-                            Debug.Log("win");
+                            //Cube it the next cube to reach
+                            Debug.Log("reach: " + o.GetComponent<Renderer>().material);
+                            m_next++;
+                            updateColorIcons();
+                            updatePlateform();
+
+                            if (m_next == m_path.Count)
+                            {
+                                Debug.Log("win");
+                                showPath();
+                                FindObjectOfType<GameManager>().Playing(false);
+                            }
+                        }
+                        else if (m_next > 0 && !o.Equals(m_path[m_next - 1]))
+                        {
+                            //not the next plateform reach
+                            o.SetActive(false);
+                            Debug.Log("lose");
                             showPath();
+                            FindObjectOfType<GameManager>().Playing(false);
                         }
                     }
-                    else if(m_current_path>0 && !o.Equals(m_path[m_current_path-1]))
+                    else
                     {
-                        //not the next plateform reach
-                        o.SetActive(false); 
-                        Debug.Log("lose");
+                        o.SetActive(false);
+                        Debug.Log("lose2");
                         showPath();
+                        FindObjectOfType<GameManager>().Playing(false);
                     }
+                }
+            }
+        }
+    }
+
+
+
+    void updatePlateform()
+    {
+        if (m_next > 0)
+        {
+            GameObject currentpos = m_path[m_next - 1];
+
+            for (int i = 0; i < m_steps; i++)
+            {
+                for(int j=0; j < m_color.Count; j++)
+                {
+                    if (m_list[i, j].Equals(currentpos))
+                    {
+                        //disable behind
+                        for (int x = 0; x < i; x++)
+                        {
+                            for (int y = 0; y < m_color.Count; y++)
+                                m_list[x, y].SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    void updateColorIcons()
+    {
+        Queue<GameObject> q=new Queue<GameObject>();
+        foreach (GameObject o in m_path)
+            q.Enqueue(o);
+        for (int i = 0; i < m_next; i++)
+            q.Dequeue(); //enqueu already reach
+
+        if (q.Count > 0)
+        {
+            foreach (GameObject o in m_color_icons)
+            {
+                if (q.Count > 0)
+                {
+                    o.GetComponent<Image>().color = q.Dequeue().GetComponent<Renderer>().material.color;
                 }
                 else
                 {
                     o.SetActive(false);
-                    Debug.Log("lose2");
-                    showPath();
-                }             
+                }
             }
+            m_steps_text.SetText((m_path.Count - m_next).ToString());
         }
+        else
+        {
+            m_UI.SetActive(false);
+        }
+
     }
 
     void Shuffle(List<Material> list)
