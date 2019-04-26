@@ -13,7 +13,8 @@ public class CubeMap2 : MonoBehaviour
     public NavMeshSurface m_surfaces;
     public GameObject m_shape;
     public GameObject[,] m_list;
-    public int m_steps = 5;
+    public int m_random_steps_max = 4;
+    public int m_steps = 4;
     public List<Material> m_color;
     public float m_gape = 2;
     public GameObject m_UI;
@@ -27,6 +28,9 @@ public class CubeMap2 : MonoBehaviour
     //TODO  : move cam with arrow or set focus on character
     void Start()
     {
+        //Randomly improve number of steps
+        m_steps+= Random.Range(0, m_random_steps_max);
+        Debug.Log(m_steps);
         m_list = new GameObject[m_steps, m_color.Count];
         Queue<Material> shuffleColor = new Queue<Material>();
         
@@ -85,7 +89,16 @@ public class CubeMap2 : MonoBehaviour
                 m_cam.transform.position -= m_cam.transform.right * Input.GetAxis("Mouse X");
                 m_cam.transform.position -= m_cam.transform.up * Input.GetAxis("Mouse Y");
             }
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
+            {
+                m_cam.orthographicSize--;
+            }
+            else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
+            {
+                m_cam.orthographicSize++;
+            }
 
+            //Cube Map
             NavMeshHit target;
             foreach (GameObject o in m_list)
             {
