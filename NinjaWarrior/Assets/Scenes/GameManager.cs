@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        m_startTime = Time.time;
+        m_startTime = PlayerPrefs.GetFloat("timer");
     }
 
     void Update()
@@ -65,9 +65,10 @@ public class GameManager : MonoBehaviour
 
     public void SkipLevel()
     {
-        Debug.Log("skip lvl");
+        PlayerPrefs.SetInt("scoreEnable", 1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
-     
+
     public void RestartScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -81,7 +82,6 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        Debug.Log("1");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

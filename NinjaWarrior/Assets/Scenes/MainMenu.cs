@@ -8,6 +8,8 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         Time.timeScale = 1f;
+        PlayerPrefs.SetFloat("timer", Time.time);
+        PlayerPrefs.SetInt("scoreEnable", 0);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
