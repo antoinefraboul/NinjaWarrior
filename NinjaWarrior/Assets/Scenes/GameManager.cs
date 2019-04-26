@@ -7,8 +7,10 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI m_time_UI;
     float m_startTime;
     float m_time;
-    public static bool m_gameIsPlaying = true;
     public GameObject pauseMenuUI;
+    public GameObject retryMenuUI;
+    public GameObject nextLevelUI;
+
     void Start()
     {
         m_startTime = Time.time;
@@ -19,7 +21,8 @@ public class GameManager : MonoBehaviour
         //Pause
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (m_gameIsPlaying)
+
+            if (Time.timeScale > 0)
             {
                 Pause();
             }
@@ -29,7 +32,7 @@ public class GameManager : MonoBehaviour
             }
         }
         //Timer
-        if (m_gameIsPlaying)
+        if (Time.timeScale > 0)
         {
             float t = Time.time - m_startTime;
             string minutes = ((int)t / 60).ToString();
@@ -38,23 +41,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void GameOver()
+    {
+        Time.timeScale = 0f;
+        retryMenuUI.SetActive(true);
+    }
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
-        m_gameIsPlaying = true;
     }
 
     public void Pause()
     {
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
-        m_gameIsPlaying = false;
     }
 
     public void LoadMenu()
     {
-        Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
 
@@ -63,9 +68,20 @@ public class GameManager : MonoBehaviour
         Debug.Log("skip lvl");
     }
      
-    void RestartScene()
+    public void RestartScene()
     {
-        Debug.Log("restart");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void Win()
+    {
+        nextLevelUI.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void NextLevel()
+    {
+        Debug.Log("1");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex+1);
     }
 }

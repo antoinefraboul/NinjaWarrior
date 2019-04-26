@@ -22,7 +22,7 @@ public class CubeMap2 : MonoBehaviour
     [Range(0.0f, 100.0f)]  public float m_rate_side = 20;
     List<GameObject> m_path;
     int m_next=0;
-
+    bool m_over = false;
 
     //TODO  : move cam with arrow or set focus on character
     void Start()
@@ -70,14 +70,12 @@ public class CubeMap2 : MonoBehaviour
         m_path = new List<GameObject>();
         makePath(m_path);
         updateColorIcons();
-        for (int x = 0; x < m_path.Count; x++)
-            Debug.Log(x + ": " + m_path[x].GetComponent<Renderer>().material.name);
     }
 
  
     void Update()
     {
-        if (GameManager.m_gameIsPlaying)
+        if (Time.timeScale > 0)
         {
             //UI
             m_UI.SetActive(true);
@@ -107,37 +105,41 @@ public class CubeMap2 : MonoBehaviour
 
                             if (m_next == m_path.Count)
                             {
-                                Debug.Log("win");
                                 showPath();
-                                GameManager.m_gameIsPlaying = false;
+                                FindObjectOfType<GameManager>().Invoke("Win", 1.5f);
                             }
                         }
                         else if (m_next > 0 && !o.Equals(m_path[m_next - 1]))
                         {
                             //not the next plateform reach
                             o.SetActive(false);
-                            Debug.Log("lose");
                             showPath();
-                            GameManager.m_gameIsPlaying = false;
+                            Invoke("GameOver", 0.5f);
                         }
                     }
                     else
                     {
                         o.SetActive(false);
-                        Debug.Log("lose2");
                         showPath();
-                        GameManager.m_gameIsPlaying = false;
+                        Invoke("GameOver", 0.5f);
+
                     }
                 }
             }
         }
         else
         {
+            if(!m_over)
             m_UI.SetActive(false);
         }
     }
 
 
+    void GameOver()
+    {
+        m_over = true;
+        FindObjectOfType<GameManager>().GameOver();
+    }
 
     void updatePlateform()
     {

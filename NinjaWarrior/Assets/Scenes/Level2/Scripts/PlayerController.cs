@@ -12,13 +12,14 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Time.timeScale = 1f;
         m_agent.updateRotation = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.m_gameIsPlaying)
+        if (Time.timeScale > 0)
         {
             if (Input.GetMouseButtonDown(0))
             {
