@@ -30,7 +30,6 @@ public class CubeMap2 : MonoBehaviour
     {
         //Randomly improve number of steps
         m_steps+= Random.Range(0, m_random_steps_max);
-        Debug.Log(m_steps);
         m_list = new GameObject[m_steps, m_color.Count];
         Queue<Material> shuffleColor = new Queue<Material>();
         
@@ -111,7 +110,7 @@ public class CubeMap2 : MonoBehaviour
                         if (o.Equals(m_path[m_next]))
                         {
                             //Cube it the next cube to reach
-                            Debug.Log("reach: " + o.GetComponent<Renderer>().material);
+                            //Debug.Log("reach: " + o.GetComponent<Renderer>().material);
                             m_next++;
                             updateColorIcons();
                             updatePlateform();

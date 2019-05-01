@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public Camera m_cam;
     public NavMeshAgent m_agent;
     public ThirdPersonCharacter m_character;
+
     // Start is called before the first frame update
     void Start()
     {
