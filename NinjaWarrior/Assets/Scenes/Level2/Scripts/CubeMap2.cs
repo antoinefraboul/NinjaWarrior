@@ -73,6 +73,9 @@ public class CubeMap2 : MonoBehaviour
         m_path = new List<GameObject>();
         makePath(m_path);
         updateColorIcons();
+
+        //Show all the cube map from the cam
+        m_cam.orthographicSize += m_path.Count*1.4f;
     }
 
  
@@ -88,13 +91,13 @@ public class CubeMap2 : MonoBehaviour
                 m_cam.transform.position -= m_cam.transform.right * Input.GetAxis("Mouse X");
                 m_cam.transform.position -= m_cam.transform.up * Input.GetAxis("Mouse Y");
             }
-            if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
+            if (Input.GetAxis("Mouse ScrollWheel") > 0f && m_cam.orthographicSize-1 > 0) // forward
             {
                 m_cam.orthographicSize--;
             }
             else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
             {
-                m_cam.orthographicSize++;
+                m_cam.orthographicSize ++;
             }
 
             //Cube Map

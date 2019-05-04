@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     public GameObject pauseMenuUI;
     public GameObject retryMenuUI;
     public GameObject nextLevelUI;
+    public GameObject helpUI;
+    public GameObject optionsUI;
 
     void Start()
     {
@@ -18,53 +20,100 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        //Pause
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-
-            if (Time.timeScale > 0)
-            {
-                Pause();
-            }
-            else
-            {
-                Resume();
-            }
-        }
-        //Retry
-        if (Input.GetKeyDown(KeyCode.R))
-            RestartScene();
-        //Timer
         if (Time.timeScale > 0)
         {
+            //Game is playing
             float t = Time.time - m_startTime;
             string minutes = ((int)t / 60).ToString();
             string seconds = (t % 60).ToString("f0");
             m_time_UI.SetText(minutes + ":" + seconds);
+
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            {
+                HideMenu();
+                pauseMenuUI.SetActive(true);
+                Stop();
+            }else if (Input.GetKeyDown(KeyCode.H))
+            {
+                HideMenu();
+                helpUI.SetActive(true);
+                Stop();
+            }else if (Input.GetKeyDown(KeyCode.O))
+            {
+                HideMenu();
+                Debug.Log("options menu show");
+                //helpUI.SetActive(true);
+                Stop();
+            }else if (Input.GetKeyDown(KeyCode.R))
+            {
+                RestartScene();
+            }
+        }
+        else
+        {
+            //Game in pause
+            if (Input.GetKeyDown(KeyCode.Escape)  && nextLevelUI.activeInHierarchy)
+            {
+                //Win
+                NextLevel();
+            }else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.R)) && retryMenuUI.activeInHierarchy)
+            {
+                //Over
+                RestartScene();
+            }else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.H)) && helpUI.activeInHierarchy)
+            {
+                //Help
+                HideMenu();
+                Resume();
+            }/*
+            else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.O)) && optionsUI.activeInHierarchy)
+            {
+                //Options
+                Debug.Log("options menu hide");
+                Resume();
+            }*/ else if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                //Pause
+                HideMenu();
+                Resume();
+            }
         }
     }
 
-    public void GameOver()
-    {
-        Time.timeScale = 0f;
-        retryMenuUI.SetActive(true);
-    }
-    public void Resume()
+    public void HideMenu()
     {
         pauseMenuUI.SetActive(false);
+        retryMenuUI.SetActive(false);
+        nextLevelUI.SetActive(false);
+        helpUI.SetActive(false);
+    }
+
+
+    public void Win()
+    {
+        HideMenu();
+        Stop();
+        nextLevelUI.SetActive(true);
+    }
+
+
+    public void GameOver()
+    {
+        HideMenu();
+        Stop();
+        retryMenuUI.SetActive(true);
+    }
+
+    public void Resume()
+    {
         Time.timeScale = 1f;
     }
 
-    public void Pause()
+    public void Stop()
     {
-        pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
     }
 
-    public void stop()
-    {
-        Time.timeScale = 0f;
-    }
 
     public void LoadMenu()
     {
@@ -82,12 +131,6 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void Win()
-    {
-        nextLevelUI.SetActive(true);
-        Time.timeScale = 0f;
-    }
-
     public void NextLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -97,6 +140,4 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(s);
     }
-
-    
 }

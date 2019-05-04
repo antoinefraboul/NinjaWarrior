@@ -1302,7 +1302,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 10
   m_Viewport: {fileID: 1838247530}
   m_HorizontalScrollbar: {fileID: 1496775866}
   m_VerticalScrollbar: {fileID: 1957195463}
@@ -5453,7 +5453,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 200, y: -21.720001}
+  m_AnchoredPosition: {x: 200, y: -21.71997}
   m_SizeDelta: {x: 380, y: 23.44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1011157507
@@ -5629,15 +5629,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49dd0c862de801346b01c0f7df84dd63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_options:
-    resolution: 0
-    fullScreen: 0
-    volumeMuted: 0
-    volume: 0
-    nbColors: 0
-    steps: 0
-    randomSteps: 0
-    sideSteps: 0
   m_resolutionDropDown: {fileID: 1782161345}
   m_fullScreenToggle: {fileID: 838312159}
   m_volumeToggle: {fileID: 1869041558}

@@ -102,6 +102,8 @@ public class OptionsManager : MonoBehaviour
 
     public void LoadLevel(int n)
     {
+        PlayerPrefs.SetFloat("timer", Time.time);
+        PlayerPrefs.SetString("scoreEnable", "false");
         SceneManager.LoadScene(n);
     }
 
