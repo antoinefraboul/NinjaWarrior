@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityStandardAssets.Characters.ThirdPerson;
 
 public class CubeMap2 : MonoBehaviour
 {
@@ -13,36 +14,56 @@ public class CubeMap2 : MonoBehaviour
     public NavMeshSurface m_surfaces;
     public GameObject m_shape;
     public GameObject[,] m_list;
-    public int m_random_steps_max = 4;
-    public int m_steps = 4;
+    int m_random_steps_max = 4;
+    int m_steps_min = 4;
+    private int m_steps;
+    private int m_nbColor_min;
+    private int m_random_color_max;
+    private int m_nbColor;
     public List<Material> m_color;
     public float m_gape = 2;
     public GameObject m_UI;
     public List<GameObject> m_color_icons;
     public TextMeshProUGUI m_steps_text;
-    [Range(0.0f, 100.0f)]  public float m_rate_side = 20;
+    public GameObject m_ground;
+    [Range(0.0f, 100.0f)]  float m_rate_side = 20;
     List<GameObject> m_path;
     int m_next=0;
     bool m_over = false;
 
-    //TODO  : move cam with arrow or set focus on character
     void Start()
     {
+        //*** Init from Json
+        m_nbColor_min = OptionsManager.m_options.lvl2_nbColors;
+        m_random_steps_max=OptionsManager.m_options.lvl2_randomSteps;
+        m_rate_side = OptionsManager.m_options.lvl2_sideSteps;
+        m_steps_min = OptionsManager.m_options.lvl2_steps;
+        m_random_color_max = OptionsManager.m_options.lvl2_random_color_max;
+
+        m_nbColor = m_nbColor_min + Random.Range(0, m_random_color_max);
+        //size of the ground where the player start
+        m_ground.transform.localScale = new Vector3(m_ground.transform.localScale.x, m_ground.transform.localScale.y, 4f * m_nbColor);
+        m_ground.transform.position = new Vector3(m_ground.transform.position.x, m_ground.transform.position.y, (4f * m_nbColor)/2);
+
+
         //Randomly improve number of steps
-        m_steps+= Random.Range(0, m_random_steps_max);
-        m_list = new GameObject[m_steps, m_color.Count];
+
+      
+        m_steps = m_steps_min+ Random.Range(0, m_random_steps_max);
+        m_list = new GameObject[m_steps, m_nbColor];
         Queue<Material> shuffleColor = new Queue<Material>();
         
+    
         for (int i = 0; i < m_steps; i++)
         {
             //reload color
-            Shuffle(m_color);
-            for (int r = 0; r <  m_color.Count; r++)
+            Shuffle(m_color, m_nbColor);
+            for (int r = 0; r < m_nbColor; r++)
             {
                 shuffleColor.Enqueue(m_color[r]);
             }
                 
-            for (int j = 0; j < m_color.Count; j++)
+            for (int j = 0; j < m_nbColor; j++)
             {
                 GameObject cgenerated = Instantiate(m_shape); 
                 cgenerated.transform.parent = this.transform; //inside this game object
@@ -81,6 +102,7 @@ public class CubeMap2 : MonoBehaviour
  
     void Update()
     {
+        UpdateLevelOptions();
         if (Time.timeScale > 0)
         {
             //UI
@@ -112,8 +134,6 @@ public class CubeMap2 : MonoBehaviour
                         //Cube is part of the path
                         if (o.Equals(m_path[m_next]))
                         {
-                            //Cube it the next cube to reach
-                            //Debug.Log("reach: " + o.GetComponent<Renderer>().material);
                             m_next++;
                             updateColorIcons();
                             updatePlateform();
@@ -137,7 +157,6 @@ public class CubeMap2 : MonoBehaviour
                         o.SetActive(false);
                         showPath();
                         Invoke("GameOver", 0.5f);
-
                     }
                 }
             }
@@ -149,6 +168,21 @@ public class CubeMap2 : MonoBehaviour
         }
     }
 
+    void UpdateLevelOptions()
+    {
+        if (!OptionsManager.m_options.lvl2_nbColors.Equals(m_nbColor_min) 
+            || !OptionsManager.m_options.lvl2_randomSteps.Equals(m_random_steps_max)
+            || !OptionsManager.m_options.lvl2_sideSteps.Equals(m_rate_side)
+            || !OptionsManager.m_options.lvl2_steps.Equals(m_steps_min)
+            || !OptionsManager.m_options.lvl2_random_color_max.Equals(m_random_color_max))
+        {
+            //level change
+            if (Time.timeScale > 0)
+            {
+              SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+    }
 
     void GameOver()
     {
@@ -164,14 +198,14 @@ public class CubeMap2 : MonoBehaviour
 
             for (int i = 0; i < m_steps; i++)
             {
-                for(int j=0; j < m_color.Count; j++)
+                for(int j=0; j < m_nbColor; j++)
                 {
                     if (m_list[i, j].Equals(currentpos))
                     {
                         //disable behind
                         for (int x = 0; x < i; x++)
                         {
-                            for (int y = 0; y < m_color.Count; y++)
+                            for (int y = 0; y < m_nbColor; y++)
                                 m_list[x, y].SetActive(false);
                         }
                     }
@@ -211,11 +245,11 @@ public class CubeMap2 : MonoBehaviour
 
     }
 
-    void Shuffle(List<Material> list)
+    void Shuffle(List<Material> list,int size)
     {
         for (var i = 0; i < list.Count-1; ++i)
         {
-            var r = Random.Range(i, list.Count);
+            var r = Random.Range(i, size);
             var tmp = list[i];
             list[i] = list[r];
             list[r] = tmp;
@@ -233,12 +267,12 @@ public class CubeMap2 : MonoBehaviour
 
     void makePath(List<GameObject> path)
     {
-        var index = Random.Range(0, m_color.Count);
+        var index = Random.Range(0, m_nbColor);
         path.Add(m_list[0, index]); //initialize first index
 
         for (int i = 1; i < m_steps; i++)
         {
-            var next_index=Random.Range(0, m_color.Count);
+            var next_index=Random.Range(0, m_nbColor);
 
             //side
             float side = Random.Range(0.0f, 100.0f);
@@ -246,11 +280,11 @@ public class CubeMap2 : MonoBehaviour
             {
                 next_index = index;
                 //bounds
-                if (index > 0 && index < m_color.Count - 1)
+                if (index > 0 && index < m_nbColor - 1)
                 {
                     index += side < m_rate_side / 2 ? 1 : -1;
                 }
-                else if (index + 1 < m_color.Count - 1)
+                else if (index + 1 < m_nbColor - 1)
                 {
                     index += 1;
                 }

@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class OptionsManager : MonoBehaviour
 {
-    static Options m_options;
+    public static Options m_options;
     string m_jsonFileName = "optionsData.json";
     string m_path;
     List<Resolution> m_resolutions;
@@ -20,6 +20,8 @@ public class OptionsManager : MonoBehaviour
     public Slider m_volumeSlider;
     public Text m_colorText;
     public Slider m_colorSlider;
+    public Text m_colorRandomText;
+    public Slider m_colorRandomSlider;
     public Text m_stepsText;
     public Slider m_stepsSlider;
     public Text m_randomStepsText;
@@ -52,10 +54,11 @@ public class OptionsManager : MonoBehaviour
         m_fullScreenToggle.onValueChanged.AddListener(delegate { m_options.fullScreen=(m_fullScreenToggle.isOn); SaveOptions(); });
         m_volumeToggle.onValueChanged.AddListener(delegate { m_options.volumeMuted = (m_volumeToggle.isOn); SaveOptions(); });
         m_volumeSlider.onValueChanged.AddListener(delegate {m_options.volume=((int)m_volumeSlider.value); SaveOptions();});
-        m_colorSlider.onValueChanged.AddListener(delegate { m_options.lvl2_nbColors=((int)m_colorSlider.value); SaveOptions(); });
+        m_colorSlider.onValueChanged.AddListener(delegate { m_options.lvl2_nbColors=((int)m_colorSlider.value); m_colorRandomSlider.maxValue = 10 - m_options.lvl2_nbColors; SaveOptions(); });
+        m_colorRandomSlider.onValueChanged.AddListener(delegate { m_options.lvl2_random_color_max = ((int)m_colorRandomSlider.value); SaveOptions(); });
         m_stepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_steps=((int)m_stepsSlider.value); SaveOptions(); });
         m_randomStepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_randomSteps=((int)m_randomStepsSlider.value); SaveOptions(); });
-        m_sideStepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_sideSteps=((int)m_sideStepsSlider.value); SaveOptions(); });
+        m_sideStepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_sideSteps=((float)m_sideStepsSlider.value); SaveOptions(); });
     }
 
     void Update()
@@ -73,6 +76,8 @@ public class OptionsManager : MonoBehaviour
         m_volumeSlider.value = m_options.volume;
         m_colorText.text = m_options.lvl2_nbColors.ToString();
         m_colorSlider.value = m_options.lvl2_nbColors;
+        m_colorRandomText.text = m_options.lvl2_random_color_max.ToString();
+        m_colorRandomSlider.value = m_options.lvl2_random_color_max;
         m_stepsText.text = m_options.lvl2_steps.ToString();
         m_stepsSlider.value = m_options.lvl2_steps;
         m_randomStepsText.text = m_options.lvl2_randomSteps.ToString();
@@ -87,17 +92,25 @@ public class OptionsManager : MonoBehaviour
         string jsonString = File.ReadAllText(m_path);
         JsonUtility.FromJsonOverwrite(jsonString, m_options);
 
-        //change settings
+        //change common settings
         Resolution r = m_resolutions[m_options.resolution];
         Screen.SetResolution(r.width, r.height,m_options.fullScreen);
-        //popup pour avertir
 
-    }
+
+
+
+    // volumeMuted;
+    //volume;
+    //popup pour avertir
+
+    //---->Lvl settings should be check in the level
+}
 
     public void SaveOptions()
     {
         string json = JsonUtility.ToJson(m_options);
         File.WriteAllText(m_path, json);
+        LoadOptionsData();
     }
 
     public void LoadLevel(int n)
@@ -117,7 +130,8 @@ public class OptionsManager : MonoBehaviour
             m_options.lvl2_nbColors = 5;
             m_options.lvl2_steps = 4;
             m_options.lvl2_randomSteps = 4;
-            m_options.lvl2_sideSteps = 20;
+            m_options.lvl2_sideSteps = 10;
+            m_options.lvl2_random_color_max = 0;
         }
         else
         {
@@ -141,9 +155,10 @@ public class Options
     public int lvl2_nbColors;
     public int lvl2_steps;
     public int lvl2_randomSteps;
-    public int lvl2_sideSteps;
+    public float lvl2_sideSteps;
+    public int lvl2_random_color_max;
 
-    public Options(int res=0, bool fs=true,bool vm=false,int v=50, int c=5, int s=4, int r=4, int ss=20)
+    public Options(int res=0, bool fs=true,bool vm=false,int v=50, int c=5, int s=4, int r=4, float ss=10.0f,int rc=0)
     {
         resolution = res;
         fullScreen = fs;
@@ -153,5 +168,6 @@ public class Options
         lvl2_steps = s;
         lvl2_randomSteps = r;
         lvl2_sideSteps = ss;
+        lvl2_random_color_max = rc;
     }
 }

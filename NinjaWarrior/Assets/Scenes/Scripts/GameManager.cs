@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     public GameObject nextLevelUI;
     public GameObject helpUI;
     public GameObject optionsUI;
+    public Button helpButton;
 
     void Start()
     {
@@ -20,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        helpButton.enabled = !optionsUI.activeInHierarchy;
         if (Time.timeScale > 0)
         {
             //Game is playing
@@ -41,8 +44,7 @@ public class GameManager : MonoBehaviour
             }else if (Input.GetKeyDown(KeyCode.O))
             {
                 HideMenu();
-                Debug.Log("options menu show");
-                //helpUI.SetActive(true);
+                optionsUI.SetActive(true);
                 Stop();
             }else if (Input.GetKeyDown(KeyCode.R))
             {
@@ -65,13 +67,13 @@ public class GameManager : MonoBehaviour
                 //Help
                 HideMenu();
                 Resume();
-            }/*
+            }
             else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.O)) && optionsUI.activeInHierarchy)
             {
                 //Options
-                Debug.Log("options menu hide");
+                HideMenu();
                 Resume();
-            }*/ else if(Input.GetKeyDown(KeyCode.Escape))
+            } else if(Input.GetKeyDown(KeyCode.Escape))
             {
                 //Pause
                 HideMenu();
@@ -86,6 +88,7 @@ public class GameManager : MonoBehaviour
         retryMenuUI.SetActive(false);
         nextLevelUI.SetActive(false);
         helpUI.SetActive(false);
+        optionsUI.SetActive(false);
     }
 
 
