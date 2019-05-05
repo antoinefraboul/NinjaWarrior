@@ -5,10 +5,13 @@ using UnityEngine.UI;
 using TMPro;
 using System.IO;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
+using System;
 
 public class OptionsManager : MonoBehaviour
 {
     public static Options m_options;
+    public Sound[] m_sounds;
     string m_jsonFileName = "optionsData.json";
     string m_path;
     List<Resolution> m_resolutions;
@@ -28,6 +31,11 @@ public class OptionsManager : MonoBehaviour
     public Slider m_randomStepsSlider;
     public Text m_sideStepsText;
     public Slider m_sideStepsSlider;
+    public Button m_loadLevel1;
+    public Button m_loadLevel2;
+    public Button m_resetLevel2;
+    public Button m_resetAll;
+
 
     // Start is called before the first frame update
     void Start()
@@ -50,6 +58,7 @@ public class OptionsManager : MonoBehaviour
         LoadOptionsData();
 
         //Listner
+
         m_resolutionDropDown.onValueChanged.AddListener(delegate { m_options.resolution = (m_resolutionDropDown.value); SaveOptions(); });
         m_fullScreenToggle.onValueChanged.AddListener(delegate { m_options.fullScreen=(m_fullScreenToggle.isOn); SaveOptions(); });
         m_volumeToggle.onValueChanged.AddListener(delegate { m_options.volumeMuted = (m_volumeToggle.isOn); SaveOptions(); });
@@ -59,11 +68,36 @@ public class OptionsManager : MonoBehaviour
         m_stepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_steps=((int)m_stepsSlider.value); SaveOptions(); });
         m_randomStepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_randomSteps=((int)m_randomStepsSlider.value); SaveOptions(); });
         m_sideStepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_sideSteps=((float)m_sideStepsSlider.value); SaveOptions(); });
+        m_loadLevel1.onClick.AddListener(delegate { LoadLevel(1); });
+        m_loadLevel2.onClick.AddListener(delegate { LoadLevel(2);});
+        m_resetLevel2.onClick.AddListener(delegate { ResetOptions(2); });
+        m_resetAll.onClick.AddListener(delegate { ResetOptions(); });
+       
+        //Sounds
+        foreach (Sound s in m_sounds)
+        {
+            s.m_source = gameObject.AddComponent<AudioSource>();
+            s.m_source.loop = s.m_loop;
+            s.m_source.clip = s.m_clip;
+            s.m_source.volume = s.m_volume;
+            s.m_source.pitch = s.m_pitch;
+        }
     }
 
     void Update()
     {
         UpdateUI();
+
+        //Sounds
+        foreach(Sound s in m_sounds)
+        {
+            if (s.m_source.isPlaying)
+            {
+                s.m_source.volume = s.m_volume*((float)m_options.volume/100);
+                s.m_source.mute = m_options.volumeMuted;
+            }
+        }
+ 
     }
 
     void UpdateUI()
@@ -84,6 +118,7 @@ public class OptionsManager : MonoBehaviour
         m_randomStepsSlider.value = m_options.lvl2_randomSteps;
         m_sideStepsText.text = m_options.lvl2_sideSteps.ToString();
         m_sideStepsSlider.value = m_options.lvl2_sideSteps;
+  
     }
 
     public void LoadOptionsData()
@@ -96,15 +131,32 @@ public class OptionsManager : MonoBehaviour
         Resolution r = m_resolutions[m_options.resolution];
         Screen.SetResolution(r.width, r.height,m_options.fullScreen);
 
+        //popup pour avertir
 
+        //---->Lvl settings should be check in the level
+    }
+    public void PlaySound(string name)
+    {
+        Sound s = Array.Find(m_sounds, m_sound => m_sound.m_clip.name==name);
+        if(!s.m_source.isPlaying) s.m_source.Play();
+    }
 
+    public void StopSound(string name)
+    {
+        Sound s = Array.Find(m_sounds, m_sound => m_sound.m_clip.name == name);
+        s.m_source.Stop();
+    }
 
-    // volumeMuted;
-    //volume;
-    //popup pour avertir
-
-    //---->Lvl settings should be check in the level
-}
+    public void StopSound()
+    {
+        foreach (Sound s in m_sounds)
+        {
+            if (s.m_source.isPlaying)
+            {
+                s.m_source.Stop();
+            }
+        }
+    }
 
     public void SaveOptions()
     {
@@ -170,4 +222,18 @@ public class Options
         lvl2_sideSteps = ss;
         lvl2_random_color_max = rc;
     }
+}
+
+[System.Serializable]
+public class Sound
+{
+    public AudioClip m_clip;
+    [Range(0,1)]
+    public float m_volume=1;
+    public float m_pitch;
+    public bool m_loop;
+
+    [HideInInspector]
+    public AudioSource m_source;
+
 }

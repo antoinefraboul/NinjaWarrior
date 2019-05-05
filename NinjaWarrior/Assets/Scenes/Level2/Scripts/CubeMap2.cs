@@ -97,6 +97,9 @@ public class CubeMap2 : MonoBehaviour
 
         //Show all the cube map from the cam
         m_cam.orthographicSize += m_path.Count*1.4f;
+
+        //Sounds
+        FindObjectOfType<OptionsManager>().PlaySound("bgm_action_4");
     }
 
  

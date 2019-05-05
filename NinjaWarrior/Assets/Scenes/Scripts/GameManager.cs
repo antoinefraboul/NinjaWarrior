@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour
                 //Options
                 HideMenu();
                 Resume();
-            } else if(Input.GetKeyDown(KeyCode.Escape))
+            } else if(Input.GetKeyDown(KeyCode.Escape) && pauseMenuUI.activeInHierarchy)
             {
                 //Pause
                 HideMenu();

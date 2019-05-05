@@ -31,7 +31,7 @@ public class ScoreMenu : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             SceneManager.LoadScene(0);
 
-        if (m_scoreEnablePanel.active && Input.GetKeyDown(KeyCode.KeypadEnter) || (Input.GetKeyDown(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S)) && m_input.text.Length > 0)
+        if (m_scoreEnablePanel.activeInHierarchy && Input.GetKeyDown(KeyCode.KeypadEnter) || (Input.GetKeyDown(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.S)) && m_input.text.Length > 0)
             Save();
     }
 

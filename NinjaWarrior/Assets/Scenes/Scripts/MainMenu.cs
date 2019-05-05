@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         PlayerPrefs.SetString("scoreEnable", "false");
+        FindObjectOfType<OptionsManager>().PlaySound("bgm_menu");
     }
 
     public void PlayGame()
