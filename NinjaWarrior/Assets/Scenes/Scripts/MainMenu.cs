@@ -5,10 +5,43 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    public GameObject m_canv;
+    public GameObject m_optionsMenu;
+    public GameObject m_creditsMenu;
+    public GameObject m_mainMenu;
+
     void Start()
     {
         PlayerPrefs.SetString("scoreEnable", "false");
         FindObjectOfType<OptionsManager>().PlaySound("bgm_menu");
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.O) && !m_creditsMenu.activeInHierarchy)
+        {
+            //Options
+            m_optionsMenu.SetActive(!m_optionsMenu.activeInHierarchy);
+            m_canv.SetActive(!m_optionsMenu.activeInHierarchy);
+        }
+        if (Input.GetKeyDown(KeyCode.C) && !m_optionsMenu.activeInHierarchy)
+        {
+            //Credits
+            m_creditsMenu.SetActive(!m_creditsMenu.activeInHierarchy);
+            m_mainMenu.SetActive(!m_creditsMenu.activeInHierarchy);
+        }
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            //Highscore
+            LoadScore();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (m_optionsMenu.activeInHierarchy) m_optionsMenu.SetActive(!m_optionsMenu.activeInHierarchy);
+            if (m_creditsMenu.activeInHierarchy) m_creditsMenu.SetActive(!m_creditsMenu.activeInHierarchy);
+            m_canv.SetActive(true);
+            m_mainMenu.SetActive(true);
+        }
     }
 
     public void PlayGame()

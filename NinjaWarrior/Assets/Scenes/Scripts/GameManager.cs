@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public GameObject helpUI;
     public GameObject optionsUI;
     public Button helpButton;
+    public bool m_update = true;
 
     void Start()
     {
@@ -22,62 +23,72 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        helpButton.enabled = !optionsUI.activeInHierarchy;
-        if (Time.timeScale > 0)
+        if (m_update)
         {
-            //Game is playing
-            float t = Time.time - m_startTime;
-            string minutes = ((int)t / 60).ToString();
-            string seconds = (t % 60).ToString("f0");
-            m_time_UI.SetText(minutes + ":" + seconds);
+            helpButton.enabled = !optionsUI.activeInHierarchy;
+            if (Time.timeScale > 0)
+            {
+                //Game is playing
+                float t = Time.time - m_startTime;
+                string minutes = ((int)t / 60).ToString();
+                string seconds = (t % 60).ToString("f0");
+                m_time_UI.SetText(minutes + ":" + seconds);
 
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
-            {
-                HideMenu();
-                pauseMenuUI.SetActive(true);
-                Stop();
-            }else if (Input.GetKeyDown(KeyCode.H))
-            {
-                HideMenu();
-                helpUI.SetActive(true);
-                Stop();
-            }else if (Input.GetKeyDown(KeyCode.O))
-            {
-                HideMenu();
-                optionsUI.SetActive(true);
-                Stop();
-            }else if (Input.GetKeyDown(KeyCode.R))
-            {
-                RestartScene();
+                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+                {
+                    HideMenu();
+                    pauseMenuUI.SetActive(true);
+                    Stop();
+                }
+                else if (Input.GetKeyDown(KeyCode.H))
+                {
+                    HideMenu();
+                    helpUI.SetActive(true);
+                    Stop();
+                }
+                else if (Input.GetKeyDown(KeyCode.O))
+                {
+                    HideMenu();
+                    optionsUI.SetActive(true);
+                    Stop();
+                }
+                else if (Input.GetKeyDown(KeyCode.R))
+                {
+                    RestartScene();
+                }
             }
-        }
-        else
-        {
-            //Game in pause
-            if (Input.GetKeyDown(KeyCode.Escape)  && nextLevelUI.activeInHierarchy)
+            else
             {
-                //Win
-                NextLevel();
-            }else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.R)) && retryMenuUI.activeInHierarchy)
-            {
-                //Over
-                RestartScene();
-            }else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.H)) && helpUI.activeInHierarchy)
-            {
-                //Help
-                HideMenu();
-                Resume();
-            }
-            else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.O)) && optionsUI.activeInHierarchy)
-            {
-                //Options
-                HideMenu();
-                Resume();
-            } else if(Input.GetKeyDown(KeyCode.Escape) && pauseMenuUI.activeInHierarchy)
-            {
-                //Pause
-                HideMenu();
-                Resume();
+                //Game in pause
+                if (Input.GetKeyDown(KeyCode.Escape) && nextLevelUI.activeInHierarchy)
+                {
+                    //Win
+                    NextLevel();
+                }
+                else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.R)) && retryMenuUI.activeInHierarchy)
+                {
+                    //Over
+                    RestartScene();
+                }
+                else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.H)) && helpUI.activeInHierarchy)
+                {
+                    //Help
+                    HideMenu();
+                    Resume();
+                }
+                else if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.O)) && optionsUI.activeInHierarchy)
+                {
+                    //Options
+                    HideMenu();
+                    Resume();
+                }
+                else if (Input.GetKeyDown(KeyCode.Escape) && pauseMenuUI.activeInHierarchy)
+                {
+                    //Pause
+
+                    HideMenu();
+                    Resume();
+                }
             }
         }
     }
