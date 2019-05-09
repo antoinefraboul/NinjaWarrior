@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     {
         Time.timeScale = 1f;
         m_agent.updateRotation = false;
-        m_agent.SetDestination(m_target.transform.position);
         if(m_reach_target) m_agent.SetDestination(m_target.transform.position);
     }
 
@@ -55,6 +54,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             //stop character
+
             m_character.Move(Vector3.zero, false, false);
         }
     }
