@@ -17,7 +17,10 @@ public class PlayerController : MonoBehaviour
     {
         Time.timeScale = 1f;
         m_agent.updateRotation = false;
-        if(m_reach_target) m_agent.SetDestination(m_target.transform.position);
+        if (m_reach_target)
+        {
+            m_agent.SetDestination(m_target.transform.position);
+        }
     }
 
     // Update is called once per frame
@@ -44,7 +47,6 @@ public class PlayerController : MonoBehaviour
             if (m_agent.remainingDistance > m_agent.stoppingDistance)
             {
                 m_character.Move(m_agent.desiredVelocity, false, false);
-
             }
             else
             {

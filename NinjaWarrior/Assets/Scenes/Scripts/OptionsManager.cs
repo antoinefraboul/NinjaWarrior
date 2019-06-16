@@ -7,6 +7,7 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine.Audio;
 using System;
+using UnityEngine.Networking;
 
 public class OptionsManager : MonoBehaviour
 {
@@ -33,15 +34,17 @@ public class OptionsManager : MonoBehaviour
     public Slider m_sideStepsSlider;
     public Button m_loadLevel1;
     public Button m_loadLevel2;
+    public Button m_loadLevel3;
+    public Toggle m_lvl1Enable;
+    public Toggle m_lvl3Enable;
     public Button m_resetLevel2;
     public Button m_resetAll;
-
-
+   
     // Start is called before the first frame update
     void Start()
     {
         m_path = System.IO.Path.Combine(Application.streamingAssetsPath, m_jsonFileName);
-    
+
         Resolution[] reso = Screen.resolutions;
         m_resolutions = new List<Resolution>();
         List<string> resoString = new List<string>();
@@ -70,9 +73,11 @@ public class OptionsManager : MonoBehaviour
         m_sideStepsSlider.onValueChanged.AddListener(delegate { m_options.lvl2_sideSteps=((float)m_sideStepsSlider.value); SaveOptions(); });
         m_loadLevel1.onClick.AddListener(delegate { LoadLevel(1); });
         m_loadLevel2.onClick.AddListener(delegate { LoadLevel(2);});
+        m_loadLevel3.onClick.AddListener(delegate { LoadLevel(3); });
         m_resetLevel2.onClick.AddListener(delegate { ResetOptions(2); });
         m_resetAll.onClick.AddListener(delegate { ResetOptions(); });
-       
+        m_lvl1Enable.onValueChanged.AddListener(delegate { m_options.lvl1_enable = (m_lvl1Enable.isOn); SaveOptions(); });
+        m_lvl3Enable.onValueChanged.AddListener(delegate { m_options.lvl3_enable = (m_lvl3Enable.isOn); SaveOptions(); });
         //Sounds
         foreach (Sound s in m_sounds)
         {
@@ -118,7 +123,16 @@ public class OptionsManager : MonoBehaviour
         m_randomStepsSlider.value = m_options.lvl2_randomSteps;
         m_sideStepsText.text = m_options.lvl2_sideSteps.ToString();
         m_sideStepsSlider.value = m_options.lvl2_sideSteps;
-  
+        m_lvl1Enable.isOn = m_options.lvl1_enable;
+        m_lvl3Enable.isOn = m_options.lvl3_enable;
+    }
+
+    public void SaveOptions()
+    {
+        string json = JsonUtility.ToJson(m_options);
+        File.WriteAllText(m_path, json);
+
+        LoadOptionsData();
     }
 
     public void LoadOptionsData()
@@ -130,11 +144,8 @@ public class OptionsManager : MonoBehaviour
         //change common settings
         Resolution r = m_resolutions[m_options.resolution];
         Screen.SetResolution(r.width, r.height,m_options.fullScreen);
-
-        //popup pour avertir
-
-        //---->Lvl settings should be check in the level
     }
+
     public void PlaySound(string name)
     {
         Sound s = Array.Find(m_sounds, m_sound => m_sound.m_clip.name==name);
@@ -158,13 +169,6 @@ public class OptionsManager : MonoBehaviour
         }
     }
 
-    public void SaveOptions()
-    {
-        string json = JsonUtility.ToJson(m_options);
-        File.WriteAllText(m_path, json);
-        LoadOptionsData();
-    }
-
     public void LoadLevel(int n)
     {
         PlayerPrefs.SetFloat("timer", Time.time);
@@ -177,14 +181,18 @@ public class OptionsManager : MonoBehaviour
     {
         if (type == 1) //reset lvl1
         {
-
-        }else if (type == 2) //reset lvl2
+            m_options.lvl1_enable = false;
+        }
+        else if (type == 2) //reset lvl2
         {
             m_options.lvl2_nbColors = 5;
             m_options.lvl2_steps = 4;
             m_options.lvl2_randomSteps = 4;
             m_options.lvl2_sideSteps = 10;
             m_options.lvl2_random_color_max = 0;
+        }else if (type == 3) //reset lvl3
+        {
+            m_options.lvl3_enable = false;
         }
         else
         {
@@ -210,8 +218,9 @@ public class Options
     public int lvl2_randomSteps;
     public float lvl2_sideSteps;
     public int lvl2_random_color_max;
-
-    public Options(int res=0, bool fs=true,bool vm=false,int v=50, int c=5, int s=4, int r=4, float ss=10.0f,int rc=0)
+    public bool lvl1_enable;
+    public bool lvl3_enable;
+    public Options(int res=0, bool fs=true,bool vm=false,int v=50, int c=5, int s=4, int r=4, float ss=10.0f,int rc=0, bool lvl1=false, bool lvl3=true)
     {
         resolution = res;
         fullScreen = fs;
@@ -222,6 +231,8 @@ public class Options
         lvl2_randomSteps = r;
         lvl2_sideSteps = ss;
         lvl2_random_color_max = rc;
+        lvl1_enable = lvl1;
+        lvl3_enable = lvl3;
     }
 }
 
