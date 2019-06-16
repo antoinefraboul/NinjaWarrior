@@ -25228,6 +25228,61 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2250585006592683991, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725048396094348, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_text
+      value: None
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725048396094348, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725048396094348, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.spaceCount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725048396094348, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725048396094348, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725049446951782, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_text
+      value: Look at Marshmello
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725049446951782, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725049446951782, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.spaceCount
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725049446951782, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5162725049446951782, guid: 07b91869afdf93445ac27eb922622db4,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07b91869afdf93445ac27eb922622db4, type: 3}
 --- !u!1 &1867208676
