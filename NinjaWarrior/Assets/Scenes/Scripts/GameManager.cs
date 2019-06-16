@@ -147,7 +147,15 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        if(SceneManager.GetActiveScene().buildIndex==2 && !FindObjectOfType<OptionsManager>().m_lvl3Enable.isOn)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2); //do not load lvl 3
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
+        
     }
 
     public void LoadSceneIndex(int s)

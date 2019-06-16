@@ -49,7 +49,16 @@ public class MainMenu : MonoBehaviour
         Time.timeScale = 1f;
         PlayerPrefs.SetString("scoreEnable", "true");
         PlayerPrefs.SetFloat("timer", Time.time);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
+
+        if(FindObjectOfType<OptionsManager>().m_lvl1Enable.isOn)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1); //load lvl1
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2); //load lvl2
+        }
     }
 
     public void QuitGame()
